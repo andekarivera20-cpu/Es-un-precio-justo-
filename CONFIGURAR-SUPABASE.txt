@@ -1,0 +1,56 @@
+PRECIO JUSTO — ACTIVAR LA BASE DE DATOS COMPARTIDA
+
+1) Crea un proyecto gratuito en Supabase.
+
+2) En Supabase > SQL Editor, abre el archivo "supabase-setup.sql", copia todo y ejecútalo.
+   Esto crea la tabla, activa Row Level Security y deja estas reglas:
+   - La web pública solo puede ver precios APROBADOS.
+   - La web pública solo puede enviar precios PENDIENTES.
+   - No puede editar ni borrar registros.
+   - Se bloquean duplicados y exceso de envíos básico.
+
+3) En Supabase copia:
+   - Project URL
+   - Publishable key (sb_publishable_...)
+
+   NO uses una Secret key ni service_role en el navegador.
+
+4) Abre index.html y busca exactamente:
+
+   const SUPABASE_CONFIG={
+     url:'',
+     publishableKey:''
+   };
+
+   Déjalo así, por ejemplo:
+
+   const SUPABASE_CONFIG={
+     url:'https://TU-PROYECTO.supabase.co',
+     publishableKey:'sb_publishable_XXXXXXXX'
+   };
+
+5) Sube el index.html actualizado a GitHub Pages.
+
+MODERACIÓN
+-----------
+Los precios nuevos llegan con status = pending. Para que cuenten en la web:
+
+Supabase > Table Editor > real_prices
+
+Revisa el servicio, ciudad, precio, rango de referencia y detalles. Si tiene sentido,
+cambia status a "approved". Si parece spam/duplicado, usa "rejected".
+
+La web solo usa en sus estadísticas los registros con status = approved.
+
+ANTI-BASURA DEL MVP
+--------------------
+- Valida el precio contra el rango del servicio.
+- Importes extremadamente alejados se rechazan.
+- Si el precio es muy atípico obliga a explicar qué incluía.
+- Evita duplicados del mismo dispositivo/servicio/mes/precio.
+- Límite local: 3 envíos en 10 min y 10 al día.
+- Límite en base: 5 envíos por hora por identificador de dispositivo.
+- Todos los envíos públicos quedan pendientes de moderación.
+
+Esto es adecuado para una primera versión. Si la web empieza a tener mucho tráfico,
+el siguiente nivel sería usar una Edge Function con CAPTCHA/rate limiting por IP.
