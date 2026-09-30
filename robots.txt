@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://andekarivera20-cpu.github.io/Es-un-precio-justo-/sitemap.xml
